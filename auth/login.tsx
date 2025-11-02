@@ -18,7 +18,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ email: "", password: "" });
 
-  // Validation email
+  // Validation email avec regex
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -50,112 +50,69 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
-
     try {
-      // TODO: Remplacer par un vrai appel API
-      // const response = await fetch('YOUR_API_ENDPOINT/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // });
-
-      // Simulation d'une requête serveur (2 secondes)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Vérification factice (à remplacer par vraie validation serveur)
-      if (email === "test@example.com" && password === "password123") {
-        Alert.alert("Succès", "Connexion réussie !", [
+      // Simulation d'une requête API
+      setTimeout(() => {
+        Alert.alert("Succès", `Bienvenue ${email}!`, [
           { text: "OK", onPress: () => router.push("/dashboard") },
         ]);
-      } else {
-        Alert.alert("Erreur", "Email ou mot de passe incorrect");
-      }
+        setLoading(false);
+      }, 1500);
     } catch (error) {
-      Alert.alert(
-        "Erreur",
-        "Une erreur réseau s'est produite. Veuillez réessayer."
-      );
-      console.error("Login error:", error);
-    } finally {
+      Alert.alert("Erreur", "Erreur lors de la connexion");
       setLoading(false);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <View style={styles.formContainer}>
         <Text style={styles.title}>Connexion</Text>
 
-        <View style={styles.form}>
-          {/* Email Input */}
-          <View>
-            <TextInput
-              style={[styles.input, errors.email ? styles.inputError : null]}
-              placeholder="Email"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                setErrors({ ...errors, email: "" });
-              }}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              editable={!loading}
-              placeholderTextColor="#999"
-            />
-            {errors.email ? (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            ) : null}
-          </View>
+        {/* Email Input */}
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          editable={!loading}
+        />
+        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-          {/* Password Input */}
-          <View>
-            <TextInput
-              style={[styles.input, errors.password ? styles.inputError : null]}
-              placeholder="Mot de passe"
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                setErrors({ ...errors, password: "" });
-              }}
-              secureTextEntry
-              editable={!loading}
-              placeholderTextColor="#999"
-            />
-            {errors.password ? (
-              <Text style={styles.errorText}>{errors.password}</Text>
-            ) : null}
-          </View>
+        {/* Password Input */}
+        <TextInput
+          style={styles.input}
+          placeholder="Mot de passe"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          editable={!loading}
+        />
+        {errors.password && (
+          <Text style={styles.errorText}>{errors.password}</Text>
+        )}
 
-          {/* Login Button */}
-          <TouchableOpacity
-            style={[styles.loginButton, loading && styles.loginButtonDisabled]}
-            onPress={handleLogin}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#F5F2ED" size="large" />
-            ) : (
-              <Text style={styles.loginButtonText}>SE CONNECTER</Text>
-            )}
-          </TouchableOpacity>
+        {/* Submit Button */}
+        <TouchableOpacity
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>SE CONNECTER</Text>
+          )}
+        </TouchableOpacity>
 
-          {/* Back Button */}
-          <TouchableOpacity onPress={() => router.back()} disabled={loading}>
-            <Text style={styles.backText}>← Retour</Text>
-          </TouchableOpacity>
-
-          {/* Demo Info */}
-          <View style={styles.demoInfo}>
-            <Text style={styles.demoTitle}>Mode démo :</Text>
-            <Text style={styles.demoText}>Email: test@example.com</Text>
-            <Text style={styles.demoText}>Mot de passe: password123</Text>
-          </View>
-        </View>
+        {/* Back Button */}
+        <TouchableOpacity onPress={() => router.push("/")}>
+          <Text style={styles.backLink}>← Retour</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -164,83 +121,62 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F2ED",
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 32,
     justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+  },
+  formContainer: {
+    width: "90%",
+    maxWidth: 400,
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#5D2E0A",
+    color: "#5a3a2a",
+    marginBottom: 20,
     textAlign: "center",
-    marginBottom: 40,
-  },
-  form: {
-    gap: 20,
   },
   input: {
-    backgroundColor: "#FFF",
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#D4C4B0",
+    borderColor: "#ddd",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
     fontSize: 16,
-    color: "#333",
-  },
-  inputError: {
-    borderColor: "#DC3545",
-    borderWidth: 2,
   },
   errorText: {
-    color: "#DC3545",
+    color: "#d32f2f",
     fontSize: 12,
-    marginTop: 4,
-    marginLeft: 8,
+    marginBottom: 8,
+    marginTop: -6,
   },
-  loginButton: {
-    backgroundColor: "#5D2E0A",
-    paddingVertical: 16,
-    borderRadius: 12,
+  button: {
+    backgroundColor: "#5a3a2a",
+    padding: 14,
+    borderRadius: 8,
     alignItems: "center",
-    marginTop: 20,
-    minHeight: 56,
-    justifyContent: "center",
+    marginTop: 16,
   },
-  loginButtonDisabled: {
+  buttonDisabled: {
     opacity: 0.6,
   },
-  loginButtonText: {
-    color: "#F5F2ED",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  backText: {
-    color: "#8B4513",
-    textAlign: "center",
-    marginTop: 20,
+  buttonText: {
+    color: "white",
     fontSize: 16,
-  },
-  demoInfo: {
-    backgroundColor: "#FFF3CD",
-    padding: 12,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: "#FFC107",
-    marginTop: 20,
-  },
-  demoTitle: {
-    fontSize: 12,
     fontWeight: "bold",
-    color: "#856404",
-    marginBottom: 4,
   },
-  demoText: {
-    fontSize: 12,
-    color: "#856404",
-    marginVertical: 2,
+  backLink: {
+    color: "#5a3a2a",
+    textAlign: "center",
+    marginTop: 16,
+    fontSize: 14,
   },
 });
