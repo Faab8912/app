@@ -30,19 +30,13 @@ export default function WelcomeScreen() {
 
         {/* Action Buttons */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.registerButton}
-            onPress={() => router.push("/auth/register")}
-          >
+          <a href="/auth/register" style={styles.registerButton}>
             <Text style={styles.registerButtonText}>S'INSCRIRE</Text>
-          </TouchableOpacity>
+          </a>
 
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={() => router.push("/auth/login")}
-          >
+          <a href="/auth/login" style={styles.loginButton}>
             <Text style={styles.loginButtonText}>CONNEXION</Text>
-          </TouchableOpacity>
+          </a>
         </View>
 
         {/* Footer */}
@@ -104,6 +98,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "80%",
     maxWidth: 300,
+    textDecoration: "none",
+    display: "flex",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -131,6 +127,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "80%",
     maxWidth: 300,
+    textDecoration: "none",
+    display: "flex",
   },
   loginButtonText: {
     color: "#5D2E0A",
