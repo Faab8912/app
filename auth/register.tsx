@@ -8,10 +8,13 @@ import {
   SafeAreaView,
   Alert,
   ActivityIndicator,
+  ImageBackground,
   ScrollView,
-  LinearGradient,
 } from "react-native";
 import { useRouter } from "expo-router";
+
+// Image de fond (à placer dans vos assets)
+const BACKGROUND_IMAGE = require("../../assets/background.jpg");
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -103,14 +106,13 @@ export default function RegisterScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={["#0f0f0f", "#1a1a1a", "#2d2416"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+    <ImageBackground
+      source={BACKGROUND_IMAGE}
       style={styles.container}
+      imageStyle={styles.backgroundImage}
     >
-      {/* Accent décoratif en haut */}
-      <View style={styles.topAccent} />
+      {/* Overlay sombre */}
+      <View style={styles.overlay} />
 
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
@@ -119,14 +121,11 @@ export default function RegisterScreen() {
         >
           {/* Contenu principal */}
           <View style={styles.content}>
-            {/* Titre principal */}
+            {/* Titre */}
             <Text style={styles.title}>adopte</Text>
 
             {/* Sous-titre */}
             <Text style={styles.subtitle}>INSCRIPTION</Text>
-
-            {/* Ligne décorative */}
-            <View style={styles.decorativeLine} />
 
             {/* Formulaire */}
             <View style={styles.formContainer}>
@@ -139,7 +138,7 @@ export default function RegisterScreen() {
                     errors.fullName ? styles.inputError : null,
                   ]}
                   placeholder="Votre nom complet"
-                  placeholderTextColor="#666"
+                  placeholderTextColor="#999"
                   value={fullName}
                   onChangeText={setFullName}
                 />
@@ -157,7 +156,7 @@ export default function RegisterScreen() {
                     errors.email ? styles.inputError : null,
                   ]}
                   placeholder="votre@email.com"
-                  placeholderTextColor="#666"
+                  placeholderTextColor="#999"
                   keyboardType="email-address"
                   value={email}
                   onChangeText={setEmail}
@@ -173,7 +172,7 @@ export default function RegisterScreen() {
                 <TextInput
                   style={[styles.input, errors.age ? styles.inputError : null]}
                   placeholder="Votre âge"
-                  placeholderTextColor="#666"
+                  placeholderTextColor="#999"
                   keyboardType="numeric"
                   value={age}
                   onChangeText={setAge}
@@ -194,7 +193,7 @@ export default function RegisterScreen() {
                       errors.password ? styles.inputError : null,
                     ]}
                     placeholder="Minimum 8 caractères"
-                    placeholderTextColor="#666"
+                    placeholderTextColor="#999"
                     secureTextEntry={!showPassword}
                     value={password}
                     onChangeText={setPassword}
@@ -224,7 +223,7 @@ export default function RegisterScreen() {
                       errors.confirmPassword ? styles.inputError : null,
                     ]}
                     placeholder="Confirmez votre mot de passe"
-                    placeholderTextColor="#666"
+                    placeholderTextColor="#999"
                     secureTextEntry={!showConfirmPassword}
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
@@ -244,29 +243,20 @@ export default function RegisterScreen() {
               </View>
 
               {/* Bouton d'inscription */}
-              <LinearGradient
-                colors={["#d4a574", "#c68c4d"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.registerButtonGradient}
+              <TouchableOpacity
+                style={[
+                  styles.registerButton,
+                  loading && styles.registerButtonDisabled,
+                ]}
+                onPress={handleRegister}
+                disabled={loading}
               >
-                <TouchableOpacity
-                  style={[
-                    styles.registerButton,
-                    loading && styles.registerButtonDisabled,
-                  ]}
-                  onPress={handleRegister}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.registerButtonText}>
-                      CRÉER LE COMPTE
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              </LinearGradient>
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.registerButtonText}>CRÉER LE COMPTE</Text>
+                )}
+              </TouchableOpacity>
 
               {/* Lien vers connexion */}
               <TouchableOpacity
@@ -288,32 +278,21 @@ export default function RegisterScreen() {
           </View>
         </ScrollView>
       </SafeAreaView>
-
-      {/* Accent décoratif en bas */}
-      <View style={styles.bottomAccent} />
-    </LinearGradient>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#000",
   },
-  topAccent: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: "#d4a574",
+  backgroundImage: {
+    resizeMode: "cover",
   },
-  bottomAccent: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: "#d4a574",
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   safeArea: {
     flex: 1,
@@ -333,22 +312,15 @@ const styles = StyleSheet.create({
     fontWeight: "300",
     color: "#fff",
     textAlign: "center",
-    marginBottom: 5,
-    letterSpacing: 3,
+    marginBottom: 10,
+    letterSpacing: 2,
   },
   subtitle: {
-    fontSize: 12,
-    color: "#d4a574",
+    fontSize: 14,
+    color: "#ccc",
     textAlign: "center",
-    letterSpacing: 4,
-    marginBottom: 20,
-    fontWeight: "600",
-  },
-  decorativeLine: {
-    height: 1,
-    backgroundColor: "rgba(212, 165, 116, 0.3)",
-    marginHorizontal: 40,
-    marginBottom: 30,
+    letterSpacing: 3,
+    marginBottom: 40,
   },
   formContainer: {
     marginBottom: 30,
@@ -357,30 +329,29 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 11,
-    color: "#bbb",
+    fontSize: 12,
+    color: "#ccc",
     marginBottom: 8,
-    letterSpacing: 1.5,
+    letterSpacing: 1,
     textTransform: "uppercase",
-    fontWeight: "500",
   },
   input: {
     borderWidth: 1,
-    borderColor: "rgba(212, 165, 116, 0.3)",
-    borderRadius: 6,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+    borderRadius: 8,
     paddingHorizontal: 16,
-    paddingVertical: 13,
+    paddingVertical: 14,
     color: "#fff",
-    fontSize: 15,
-    backgroundColor: "rgba(255, 255, 255, 0.04)",
+    fontSize: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
     fontFamily: "System",
   },
   inputError: {
     borderColor: "#ff6b6b",
-    backgroundColor: "rgba(255, 107, 107, 0.08)",
+    backgroundColor: "rgba(255, 107, 107, 0.1)",
   },
   errorText: {
-    color: "#ff8a8a",
+    color: "#ff6b6b",
     fontSize: 12,
     marginTop: 6,
     fontStyle: "italic",
@@ -400,46 +371,44 @@ const styles = StyleSheet.create({
   eyeIconText: {
     fontSize: 18,
   },
-  registerButtonGradient: {
-    borderRadius: 6,
-    marginTop: 15,
-    shadowColor: "#d4a574",
+  registerButton: {
+    backgroundColor: "#c68c4d",
+    paddingVertical: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
-  },
-  registerButton: {
-    paddingVertical: 15,
-    alignItems: "center",
-    borderRadius: 6,
   },
   registerButtonDisabled: {
     opacity: 0.6,
   },
   registerButtonText: {
     color: "#fff",
-    fontSize: 15,
-    fontWeight: "700",
-    letterSpacing: 1.5,
+    fontSize: 16,
+    fontWeight: "600",
+    letterSpacing: 1,
   },
   loginLink: {
     marginTop: 20,
     alignItems: "center",
   },
   loginLinkText: {
-    color: "#aaa",
-    fontSize: 13,
+    color: "#ccc",
+    fontSize: 14,
   },
   loginLinkBold: {
-    color: "#d4a574",
-    fontWeight: "700",
+    color: "#c68c4d",
+    fontWeight: "600",
   },
   disclaimer: {
-    fontSize: 10,
-    color: "#777",
+    fontSize: 11,
+    color: "#999",
     textAlign: "center",
-    marginTop: 25,
-    lineHeight: 15,
+    marginTop: 20,
+    lineHeight: 16,
   },
 });
