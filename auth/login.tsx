@@ -8,8 +8,11 @@ import {
   SafeAreaView,
   Alert,
   ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 import { useRouter } from "expo-router";
+
+const BACKGROUND_IMAGE = require("../../assets/background.jpg");
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -18,13 +21,11 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ email: "", password: "" });
 
-  // Validation email avec regex
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  // Validation du formulaire
   const validateForm = (): boolean => {
     const newErrors = { email: "", password: "" };
     let isValid = true;
@@ -54,7 +55,6 @@ export default function LoginScreen() {
 
     setLoading(true);
     try {
-      // Simulation d'une requête API
       setTimeout(() => {
         Alert.alert("Succès", `Bienvenue ${email}!`, [
           { text: "OK", onPress: () => router.push("/dashboard") },
@@ -68,115 +68,167 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.formContainer}>
-        <Text style={styles.title}>Connexion</Text>
+    <ImageBackground
+      source={BACKGROUND_IMAGE}
+      style={styles.background}
+      blurRadius={5}
+    >
+      <SafeAreaView style={styles.container}>
+        <View style={styles.overlay} />
 
-        {/* Email Input */}
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          editable={!loading}
-        />
-        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+        <View style={styles.contentContainer}>
+          <Text style={styles.title}>CONNEXION</Text>
 
-        {/* Password Input */}
-        <TextInput
-          style={styles.input}
-          placeholder="Mot de passe"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          editable={!loading}
-        />
-        {errors.password && (
-          <Text style={styles.errorText}>{errors.password}</Text>
-        )}
+          {/* Email Input */}
+          <View style={styles.inputGroup}>
+            <TextInput
+              style={styles.input}
+              placeholder="adresse email"
+              placeholderTextColor="rgba(255,255,255,0.6)"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              editable={!loading}
+            />
+            {errors.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
+          </View>
 
-        {/* Submit Button */}
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleLogin}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>SE CONNECTER</Text>
-          )}
-        </TouchableOpacity>
+          {/* Password Input */}
+          <View style={styles.inputGroup}>
+            <TextInput
+              style={styles.input}
+              placeholder="mot de passe"
+              placeholderTextColor="rgba(255,255,255,0.6)"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              editable={!loading}
+            />
+            {errors.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
+          </View>
 
-        {/* Back Button */}
-        <TouchableOpacity onPress={() => router.push("/")}>
-          <Text style={styles.backLink}>← Retour</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          {/* Remember Me */}
+          <View style={styles.rememberContainer}>
+            <TouchableOpacity>
+              <Text style={styles.rememberText}>● mémoriser</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.forgotText}>mot de passe oublié ?</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Login Button */}
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>connexion</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Register Button */}
+          <TouchableOpacity onPress={() => router.push("/auth/register")}>
+            <Text style={styles.registerText}>inscription</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
   },
-  formContainer: {
-    width: "90%",
-    maxWidth: 400,
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  contentContainer: {
+    width: "85%",
+    maxWidth: 350,
+    zIndex: 1,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#5a3a2a",
-    marginBottom: 20,
+    fontSize: 28,
+    fontWeight: "300",
+    color: "#fff",
+    marginBottom: 40,
     textAlign: "center",
+    letterSpacing: 2,
+  },
+  inputGroup: {
+    marginBottom: 24,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    fontSize: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255, 255, 255, 0.6)",
+    paddingVertical: 12,
+    paddingHorizontal: 0,
+    fontSize: 14,
+    color: "#fff",
+    fontStyle: "italic",
   },
   errorText: {
-    color: "#d32f2f",
+    color: "#ff6b6b",
+    fontSize: 11,
+    marginTop: 4,
+    fontStyle: "italic",
+  },
+  rememberContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 32,
+    paddingHorizontal: 0,
+  },
+  rememberText: {
+    color: "rgba(255, 255, 255, 0.7)",
     fontSize: 12,
-    marginBottom: 8,
-    marginTop: -6,
+    fontStyle: "italic",
+  },
+  forgotText: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 12,
+    fontStyle: "italic",
   },
   button: {
-    backgroundColor: "#5a3a2a",
-    padding: 14,
-    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: "rgba(255, 255, 255, 0.7)",
+    paddingVertical: 14,
+    borderRadius: 25,
     alignItems: "center",
-    marginTop: 16,
+    marginBottom: 16,
   },
   buttonDisabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
   buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  backLink: {
-    color: "#5a3a2a",
-    textAlign: "center",
-    marginTop: 16,
+    color: "#fff",
     fontSize: 14,
+    fontWeight: "300",
+    letterSpacing: 1,
+    textTransform: "lowercase",
+  },
+  registerText: {
+    color: "rgba(255, 255, 255, 0.7)",
+    textAlign: "center",
+    fontSize: 14,
+    fontStyle: "italic",
+    textTransform: "lowercase",
   },
 });
