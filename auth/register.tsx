@@ -4,310 +4,197 @@ import {
   Text,
   StyleSheet,
   TextInput,
-  TouchableOpacity,
   SafeAreaView,
+  TouchableOpacity,
   Alert,
-  ActivityIndicator,
-  ImageBackground,
   ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
 
-// Image de fond (à placer dans vos assets)
-const BACKGROUND_IMAGE = require("../../assets/background.jpg");
-
 export default function RegisterScreen() {
   const router = useRouter();
-  const [fullName, setFullName] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({
-    fullName: "",
-    email: "",
-    age: "",
-    password: "",
-    confirmPassword: "",
-  });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validateForm = (): boolean => {
-    const newErrors = {
-      fullName: "",
-      email: "",
-      age: "",
-      password: "",
-      confirmPassword: "",
-    };
-    let isValid = true;
-
-    if (!fullName.trim()) {
-      newErrors.fullName = "Le nom complet est requis";
-      isValid = false;
-    }
-
-    if (!email.trim()) {
-      newErrors.email = "L'email est requis";
-      isValid = false;
-    } else if (!validateEmail(email)) {
-      newErrors.email = "Email invalide";
-      isValid = false;
-    }
-
-    if (!age.trim()) {
-      newErrors.age = "L'âge est requis";
-      isValid = false;
-    } else if (isNaN(Number(age)) || Number(age) < 18) {
-      newErrors.age = "Vous devez avoir au moins 18 ans";
-      isValid = false;
-    }
-
-    if (!password) {
-      newErrors.password = "Le mot de passe est requis";
-      isValid = false;
-    } else if (password.length < 8) {
-      newErrors.password =
-        "Le mot de passe doit contenir au moins 8 caractères";
-      isValid = false;
+  const handleRegister = () => {
+    if (!name || !email || !age || !password || !confirmPassword) {
+      Alert.alert("Erreur", "Veuillez remplir tous les champs");
+      return;
     }
 
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Les mots de passe ne correspondent pas";
-      isValid = false;
+      Alert.alert("Erreur", "Les mots de passe ne correspondent pas");
+      return;
     }
 
-    setErrors(newErrors);
-    return isValid;
-  };
-
-  const handleRegister = async () => {
-    if (!validateForm()) return;
-
-    setLoading(true);
-    try {
-      // Simuler un appel API
-      setTimeout(() => {
-        Alert.alert("Succès", "Compte créé avec succès !");
-        router.push("/(auth)/login");
-      }, 2000);
-    } catch (error) {
-      Alert.alert("Erreur", "Une erreur s'est produite");
-    } finally {
-      setLoading(false);
-    }
+    Alert.alert("Succès", "Compte créé avec succès !", [
+      { text: "OK", onPress: () => router.push("/dashboard") },
+    ]);
   };
 
   return (
-    <ImageBackground
-      source={BACKGROUND_IMAGE}
-      style={styles.container}
-      imageStyle={styles.backgroundImage}
-    >
-      {/* Overlay sombre */}
-      <View style={styles.overlay} />
+    <SafeAreaView style={styles.container}>
+      {/* Gradient overlay background */}
+      <View style={styles.gradientBackground} />
 
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Contenu principal */}
-          <View style={styles.content}>
-            {/* Titre */}
-            <Text style={styles.title}>adopte</Text>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.content}>
+          {/* Logo */}
+          <Text style={styles.logo}>Mr&Mme</Text>
 
-            {/* Sous-titre */}
-            <Text style={styles.subtitle}>INSCRIPTION</Text>
+          {/* Subtitle */}
+          <Text style={styles.subtitle}>INSCRIPTION</Text>
 
-            {/* Formulaire */}
-            <View style={styles.formContainer}>
-              {/* Champ Nom Complet */}
-              <View style={styles.inputWrapper}>
+          {/* Decorative line */}
+          <View style={styles.decorativeLine} />
+
+          {/* Form Container - Compact and centered */}
+          <View style={styles.formWrapper}>
+            <View style={styles.form}>
+              {/* Full Name */}
+              <View style={styles.inputGroup}>
                 <Text style={styles.label}>Nom complet</Text>
                 <TextInput
-                  style={[
-                    styles.input,
-                    errors.fullName ? styles.inputError : null,
-                  ]}
+                  style={styles.input}
                   placeholder="Votre nom complet"
                   placeholderTextColor="#999"
-                  value={fullName}
-                  onChangeText={setFullName}
+                  value={name}
+                  onChangeText={setName}
                 />
-                {errors.fullName ? (
-                  <Text style={styles.errorText}>{errors.fullName}</Text>
-                ) : null}
               </View>
 
-              {/* Champ Email */}
-              <View style={styles.inputWrapper}>
-                <Text style={styles.label}>Adresse email</Text>
+              {/* Email */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Email</Text>
                 <TextInput
-                  style={[
-                    styles.input,
-                    errors.email ? styles.inputError : null,
-                  ]}
+                  style={styles.input}
                   placeholder="votre@email.com"
                   placeholderTextColor="#999"
-                  keyboardType="email-address"
                   value={email}
                   onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
                 />
-                {errors.email ? (
-                  <Text style={styles.errorText}>{errors.email}</Text>
-                ) : null}
               </View>
 
-              {/* Champ Âge */}
-              <View style={styles.inputWrapper}>
+              {/* Age */}
+              <View style={styles.inputGroup}>
                 <Text style={styles.label}>Âge</Text>
                 <TextInput
-                  style={[styles.input, errors.age ? styles.inputError : null]}
+                  style={styles.input}
                   placeholder="Votre âge"
                   placeholderTextColor="#999"
-                  keyboardType="numeric"
                   value={age}
                   onChangeText={setAge}
+                  keyboardType="numeric"
                 />
-                {errors.age ? (
-                  <Text style={styles.errorText}>{errors.age}</Text>
-                ) : null}
               </View>
 
-              {/* Champ Mot de passe */}
-              <View style={styles.inputWrapper}>
+              {/* Password */}
+              <View style={styles.inputGroup}>
                 <Text style={styles.label}>Mot de passe</Text>
                 <View style={styles.passwordContainer}>
                   <TextInput
-                    style={[
-                      styles.input,
-                      styles.passwordInput,
-                      errors.password ? styles.inputError : null,
-                    ]}
+                    style={[styles.input, styles.passwordInput]}
                     placeholder="Minimum 8 caractères"
                     placeholderTextColor="#999"
-                    secureTextEntry={!showPassword}
                     value={password}
                     onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
                   />
                   <TouchableOpacity
                     style={styles.eyeIcon}
                     onPress={() => setShowPassword(!showPassword)}
                   >
-                    <Text style={styles.eyeIconText}>
+                    <Text style={styles.eyeText}>
                       {showPassword ? "👁️" : "👁️‍🗨️"}
                     </Text>
                   </TouchableOpacity>
                 </View>
-                {errors.password ? (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                ) : null}
               </View>
 
-              {/* Champ Confirmer mot de passe */}
-              <View style={styles.inputWrapper}>
+              {/* Confirm Password */}
+              <View style={styles.inputGroup}>
                 <Text style={styles.label}>Confirmer le mot de passe</Text>
                 <View style={styles.passwordContainer}>
                   <TextInput
-                    style={[
-                      styles.input,
-                      styles.passwordInput,
-                      errors.confirmPassword ? styles.inputError : null,
-                    ]}
+                    style={[styles.input, styles.passwordInput]}
                     placeholder="Confirmez votre mot de passe"
                     placeholderTextColor="#999"
-                    secureTextEntry={!showConfirmPassword}
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
+                    secureTextEntry={!showConfirmPassword}
                   />
                   <TouchableOpacity
                     style={styles.eyeIcon}
                     onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
-                    <Text style={styles.eyeIconText}>
+                    <Text style={styles.eyeText}>
                       {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
                     </Text>
                   </TouchableOpacity>
                 </View>
-                {errors.confirmPassword ? (
-                  <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-                ) : null}
               </View>
 
-              {/* Bouton d'inscription */}
+              {/* Register Button */}
               <TouchableOpacity
-                style={[
-                  styles.registerButton,
-                  loading && styles.registerButtonDisabled,
-                ]}
+                style={styles.registerButton}
                 onPress={handleRegister}
-                disabled={loading}
               >
-                {loading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.registerButtonText}>CRÉER LE COMPTE</Text>
-                )}
+                <Text style={styles.registerButtonText}>CRÉER LE COMPTE</Text>
               </TouchableOpacity>
 
-              {/* Lien vers connexion */}
-              <TouchableOpacity
-                onPress={() => router.push("/(auth)/login")}
-                style={styles.loginLink}
-              >
-                <Text style={styles.loginLinkText}>
-                  Vous avez déjà un compte ?{" "}
-                  <Text style={styles.loginLinkBold}>Connexion</Text>
-                </Text>
+              {/* Back to home */}
+              <TouchableOpacity onPress={() => router.back()}>
+                <Text style={styles.backText}>← Retour</Text>
               </TouchableOpacity>
             </View>
-
-            {/* Conditions d'utilisation */}
-            <Text style={styles.disclaimer}>
-              En créant un compte, vous acceptez nos Conditions d'utilisation et
-              notre Politique de confidentialité
-            </Text>
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </ImageBackground>
+
+          {/* Footer text */}
+          <Text style={styles.footerText}>
+            En créant un compte, vous acceptez nos conditions d'utilisation
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#0f0f0f",
   },
-  backgroundImage: {
-    resizeMode: "cover",
+  gradientBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#1a1a1a",
   },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  safeArea: {
-    flex: 1,
-  },
-  scrollContainer: {
+  scrollContent: {
     flexGrow: 1,
     justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 20,
   },
   content: {
-    flex: 1,
-    justifyContent: "center",
+    width: "100%",
+    maxWidth: 600,
     paddingHorizontal: 20,
+    alignItems: "center",
   },
-  title: {
+  logo: {
     fontSize: 48,
     fontWeight: "300",
     color: "#fff",
@@ -316,45 +203,47 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   subtitle: {
-    fontSize: 14,
-    color: "#ccc",
+    fontSize: 12,
+    color: "#d4a574",
     textAlign: "center",
     letterSpacing: 3,
-    marginBottom: 40,
+    marginBottom: 20,
+    fontWeight: "600",
   },
-  formContainer: {
+  decorativeLine: {
+    height: 1,
+    backgroundColor: "rgba(212, 165, 116, 0.3)",
+    width: "40%",
     marginBottom: 30,
   },
-  inputWrapper: {
-    marginBottom: 20,
+  formWrapper: {
+    width: "100%",
+    maxWidth: 450,
+    alignSelf: "center",
+  },
+  form: {
+    gap: 18,
+  },
+  inputGroup: {
+    marginBottom: 8,
   },
   label: {
-    fontSize: 12,
-    color: "#ccc",
+    fontSize: 11,
+    color: "#bbb",
     marginBottom: 8,
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     textTransform: "uppercase",
+    fontWeight: "500",
   },
   input: {
+    backgroundColor: "rgba(255, 255, 255, 0.04)",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.3)",
-    borderRadius: 8,
+    borderColor: "rgba(212, 165, 116, 0.3)",
+    borderRadius: 6,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 12,
     color: "#fff",
-    fontSize: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    fontFamily: "System",
-  },
-  inputError: {
-    borderColor: "#ff6b6b",
-    backgroundColor: "rgba(255, 107, 107, 0.1)",
-  },
-  errorText: {
-    color: "#ff6b6b",
-    fontSize: 12,
-    marginTop: 6,
-    fontStyle: "italic",
+    fontSize: 15,
   },
   passwordContainer: {
     position: "relative",
@@ -368,47 +257,39 @@ const styles = StyleSheet.create({
     right: 12,
     padding: 8,
   },
-  eyeIconText: {
+  eyeText: {
     fontSize: 18,
   },
   registerButton: {
-    backgroundColor: "#c68c4d",
-    paddingVertical: 16,
-    borderRadius: 8,
+    backgroundColor: "#d4a574",
+    paddingVertical: 14,
+    borderRadius: 6,
     alignItems: "center",
-    marginTop: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
+    marginTop: 15,
+    shadowColor: "#d4a574",
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  registerButtonDisabled: {
-    opacity: 0.6,
+    shadowRadius: 4,
+    elevation: 5,
   },
   registerButtonText: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-    letterSpacing: 1,
+    fontSize: 15,
+    fontWeight: "700",
+    letterSpacing: 1.5,
   },
-  loginLink: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  loginLinkText: {
-    color: "#ccc",
-    fontSize: 14,
-  },
-  loginLinkBold: {
-    color: "#c68c4d",
-    fontWeight: "600",
-  },
-  disclaimer: {
-    fontSize: 11,
-    color: "#999",
+  backText: {
+    color: "#d4a574",
     textAlign: "center",
     marginTop: 20,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  footerText: {
+    fontSize: 11,
+    color: "#777",
+    textAlign: "center",
+    marginTop: 25,
     lineHeight: 16,
   },
 });

@@ -19,7 +19,7 @@ export default function WelcomeScreen() {
       <View style={styles.content}>
         {/* Logo Section */}
         <View style={styles.logoSection}>
-          <Text style={styles.logo}>Mr&Mme</Text>
+          <Text style={styles.logo}>Mr&amp;Mme</Text>
           <Text style={styles.slogan}>Là où Monsieur Rencontre Madame</Text>
         </View>
 
